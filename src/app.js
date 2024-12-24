@@ -6,6 +6,8 @@ import userRoutes from "./routes/user.route.js";
 import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
 import cookieParser from "cookie-parser";
+import { swaggerSpec } from "./swagger.js";
+import swaggerUi from "swagger-ui-express";
 
 const app = express();
 app.use(helmet());
@@ -23,6 +25,8 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/todos", todoRoutes);

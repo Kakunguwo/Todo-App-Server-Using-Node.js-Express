@@ -5,12 +5,14 @@ import todoRoutes from "./routes/todo.route.js";
 import userRoutes from "./routes/user.route.js";
 import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
+import cookieParser from "cookie-parser";
 
 const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

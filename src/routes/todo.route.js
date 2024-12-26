@@ -13,7 +13,7 @@ const router = Router();
 
 router.use(authMiddleware);
 router.route("/").get(getAllTodos);
-router.route("/").get(getTodo);
+router.route("/:id").get(getTodo);
 router.route("/create").post(createTodo);
 router.route("/:id/update-todo-status").patch(updateTodoStatus);
 router.route("/update/:id").patch(updateTodo);

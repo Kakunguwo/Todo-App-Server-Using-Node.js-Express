@@ -32,4 +32,8 @@ const todoSchema = new Schema(
   { timestamps: true }
 );
 
+todoSchema.index({ title: "text", description: "text" });
+todoSchema.index({ status: 1 });
+todoSchema.index({ priority: 1, dueDate: 1 });
+
 export const Todo = model("Todo", todoSchema);

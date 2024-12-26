@@ -59,16 +59,19 @@ export const loginUser = async (req, res, next) => {
       return next(new HttpError("Fill all the fields", 421));
     }
 
-    const user = await User.findOne({ email }).select("-password");
+    const user = await User.findOne({ email });
 
     if (!user) {
       return next(new HttpError("User not found", 404));
     }
+
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
       return next(new HttpError("Invalid Password", 401));
     }
+
+    const { password: pass, ...userWithoutPassword } = user.toJSON();
 
     const { email: userEmail, _id: id } = user;
 
@@ -84,7 +87,7 @@ export const loginUser = async (req, res, next) => {
     return res
       .status(200)
       .cookie("todo-token", token, optins)
-      .json({ message: "Login successful", data: user });
+      .json({ message: "Login successful", data: userWithoutPassword });
   } catch (error) {
     console.log(error);
     return next(new HttpError("Error logging in", 500));
@@ -125,7 +128,7 @@ export const updatePassword = async (req, res, next) => {
     }
     const isValidPassword = await bcrypt.compare(oldPassword, user.password);
     if (!isValidPassword) {
-      return next(new HttpError("Invalid Password", 401));
+      return next(new HttpError("Invalid Password old password", 401));
     }
     if (newPassword.trim().length < 6) {
       return next(
@@ -134,6 +137,12 @@ export const updatePassword = async (req, res, next) => {
     }
     if (newPassword !== confirmPassword) {
       return next(new HttpError("Passwords do not match", 400));
+    }
+
+    if (oldPassword === newPassword) {
+      return next(
+        new HttpError("Old password and new password cannot be same", 400)
+      );
     }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
